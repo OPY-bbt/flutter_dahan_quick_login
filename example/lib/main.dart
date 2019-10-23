@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_dahan_quick_login/flutter_dahan_quick_login.dart';
 
 void main() => runApp(MyApp());
@@ -12,32 +9,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  FlutterDahanQuickLogin _instance = FlutterDahanQuickLogin();
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterDahanQuickLogin.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+  _handleRegisterApp() async {
+    await _instance.registerApp(appId: 'appid', appKey: 'appKey');
+  }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+  _handleGetPhoneTap() async {
+    var result = await _instance.getPhone();
+    print(result);
   }
 
   @override
@@ -48,7 +33,18 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            children: <Widget>[
+              RaisedButton(
+                child: Text("register app"),
+                onPressed: _handleRegisterApp,
+              ),
+              RaisedButton(
+                child: Text("get phone"),
+                onPressed: _handleGetPhoneTap,
+              )
+            ],
+          ),
         ),
       ),
     );
